@@ -1,10 +1,10 @@
-# Multi-stage build for Secret Network MCP Server
+# Multi-stage build for Secret Network MCP Server (secret-network-mcp)
 FROM node:18-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files for secret-network-mcp
 COPY package*.json ./
 COPY tsconfig.json ./
 

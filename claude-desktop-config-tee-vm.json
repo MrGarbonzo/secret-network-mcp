@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "secret-network": {
+      "command": "ssh",
+      "args": [
+        "root@67.215.13.114",
+        "docker", "exec", "-i", "secret-network-mcp", "node", "dist/server.js"
+      ],
+      "env": {}
+    }
+  }
+}

@@ -1,13 +1,5 @@
 {
   "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "F:\\coding"
-      ]
-    },
     "secret-network": {
       "command": "node",
       "args": [

@@ -111,8 +111,12 @@ jobs:
               - SECRET_CHAIN_ID=secret-4
               - SECRET_CHAIN_URL=https://lcd.secret.express
               - MCP_TRANSPORT=stdio
+              - MCP_HTTP_MODE=\${MCP_HTTP_MODE:-false}
+              - PORT=\${PORT:-3000}
               - SKIP_NETWORK_CHECK=false
               - ALLOW_OFFLINE_MODE=false
+            ports:
+              - "3000:3000"
             stdin_open: true
             tty: true
             volumes:

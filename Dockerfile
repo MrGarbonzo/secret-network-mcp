@@ -66,8 +66,8 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start the MCP server (stdio transport)
-CMD ["node", "dist/server.js"]
+# Start the MCP server (stdio transport by default, HTTP if MCP_HTTP_MODE=true)
+CMD ["sh", "-c", "if [ \"$MCP_HTTP_MODE\" = \"true\" ]; then node dist/server-http.js; else node dist/server.js; fi"]
 
 # Labels for better container management
 LABEL maintainer="Secret Network MCP Contributors"

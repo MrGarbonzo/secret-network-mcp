@@ -177,14 +177,14 @@ class SecretNetworkMCPServer {
         req.on('data', chunk => body += chunk);
         req.on('end', async () => {
           try {
-            const request = JSON.parse(body);
+            const jsonRequest = JSON.parse(body);
             
             // Handle list tools
-            if (request.method === 'tools/list') {
+            if (jsonRequest.method === 'tools/list') {
               const allTools = [...networkTools, ...tokenTools, ...contractTools];
               const response = {
                 jsonrpc: '2.0',
-                id: request.id,
+                id: jsonRequest.id,
                 result: { tools: allTools }
               };
               res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -193,8 +193,8 @@ class SecretNetworkMCPServer {
             }
             
             // Handle tool calls
-            if (request.method === 'tools/call') {
-              const { name, arguments: args } = request.params;
+            if (jsonRequest.method === 'tools/call') {
+              const { name, arguments: args } = jsonRequest.params;
               
               let result;
               if (networkTools.find(tool => tool.name === name)) {
@@ -209,7 +209,7 @@ class SecretNetworkMCPServer {
               
               const response = {
                 jsonrpc: '2.0',
-                id: request.id,
+                id: jsonRequest.id,
                 result: { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] }
               };
               res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -220,17 +220,18 @@ class SecretNetworkMCPServer {
             // Unknown method
             const response = {
               jsonrpc: '2.0',
-              id: request.id,
+              id: jsonRequest.id,
               error: { code: -32601, message: 'Method not found' }
             };
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(response));
             
           } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             const response = {
               jsonrpc: '2.0',
-              id: request.id || null,
-              error: { code: -32603, message: error.message }
+              id: null,
+              error: { code: -32603, message: errorMessage }
             };
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(response));

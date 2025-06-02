@@ -1,0 +1,69 @@
+{
+  "name": "secret-network-mcp",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server for Secret Network blockchain interaction",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:basic": "node basic-test.js",
+    "test:simple": "node test-simple.js",
+    "test:debug": "node debug-test.js",
+    "test:quick": "node quick-test.js",
+    "test:framework": "node validate-framework.js",
+    "test:build": "node validate-build.js",
+    "validate": "npm run test:simple",
+    "validate:full": "npm run test:simple && npm run test:quick",
+    "test:connection": "node test-real-connection.js",
+    "build:test": "npm run build && npm run test:simple && npm test",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "docker:build": "docker build -t secret-network-mcp .",
+    "docker:run": "docker run -p 3000:3000 secret-network-mcp",
+    "start:tcp": "MCP_TRANSPORT=sse node dist/server-tcp.js",
+    "dev:tcp": "MCP_TRANSPORT=sse tsx watch src/server-tcp.ts",
+    "docker:build:prod": "docker build -t secret-network-mcp:latest .",
+    "docker:compose:up": "docker-compose up -d",
+    "docker:compose:down": "docker-compose down",
+    "docker:compose:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "deploy:check": "npm run build && node verify-build.js",
+    "deploy:test": "npm run deploy:check && npm run docker:build:prod",
+    "release:prepare": "npm run deploy:test && echo 'Ready for release. Run: git tag v1.0.0 && git push origin v1.0.0'",
+    "release:version": "npm version",
+    "release:tag": "git push origin main && git push origin --tags"
+  },
+  "keywords": [
+    "mcp",
+    "secret-network",
+    "blockchain",
+    "cosmos",
+    "privacy"
+  ],
+  "author": "Secret Network MCP Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "secretjs": "^1.12.1",
+    "zod": "^3.22.4",
+    "winston": "^3.11.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8",
+    "ts-jest": "^29.1.1",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

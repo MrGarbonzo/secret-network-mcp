@@ -1,0 +1,25 @@
+{
+  "mainnet": {
+    "chainId": "secret-4",
+    "name": "Secret Network Mainnet",
+    "rpcUrl": "https://rpc.ankr.com/http/scrt_cosmos",
+    "rpcUrlBackup": "https://secretnetwork-api.lavenderfive.com:443",
+    "grpcUrl": "https://rpc.ankr.com/http/scrt_cosmos",
+    "grpcUrlBackup": "https://secretnetwork-grpc.lavenderfive.com:443",
+    "lcdUrl": "https://rpc.ankr.com/http/scrt_cosmos",
+    "lcdUrlBackup": "https://secretnetwork-api.lavenderfive.com:443",
+    "nativeDenom": "uscrt",
+    "coinGeckoId": "secret",
+    "explorer": "https://secretnodes.com"
+  },
+  "testnet": {
+    "chainId": "pulsar-3",
+    "name": "Secret Network Testnet",
+    "rpcUrl": "https://pulsar.rpc.secretnodes.com",
+    "lcdUrl": "https://pulsar.api.secretnodes.com",
+    "grpcUrl": "https://pulsar.grpc.secretnodes.com",
+    "nativeDenom": "uscrt",
+    "coinGeckoId": null,
+    "explorer": "https://secretnodes.com/pulsar"
+  }
+}

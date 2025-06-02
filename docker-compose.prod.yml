@@ -1,0 +1,83 @@
+version: '3.8'
+
+# Production docker-compose for TEE VM deployment
+# This version is optimized for the TEE VM environment
+
+services:
+  secret-network-mcp:
+    # Use pre-built image from GitHub Container Registry
+    # Replace with actual image URL after GitHub Actions builds it
+    image: ghcr.io/yourusername/secret-network-mcp:latest
+    # Alternative: build locally (for testing)
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   target: production
+    
+    container_name: secret-network-mcp
+    restart: unless-stopped
+    
+    # Environment variables - TEE VM will populate these through secure env system
+    environment:
+      # Core MCP settings
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      
+      # Secret Network configuration
+      - NETWORK=mainnet
+      - SECRET_CHAIN_ID=secret-4  
+      - SECRET_CHAIN_URL=https://lcd.secret.express
+      
+      # Optional: Transport mode (stdio or sse)
+      - MCP_TRANSPORT=stdio
+      - PORT=3000
+      
+      # Network connection settings
+      - SKIP_NETWORK_CHECK=false
+      - ALLOW_OFFLINE_MODE=false
+      
+      # Security settings (populated by TEE VM)
+      - SECRET_API_KEY=${SECRET_API_KEY:-}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
+      
+    # For stdio transport, we need interactive mode
+    stdin_open: true
+    tty: true
+    
+    # Optional: Expose port for SSE transport mode
+    # ports:
+    #   - "3000:3000"
+    
+    # Persistent storage
+    volumes:
+      - mcp_logs:/app/logs
+      
+    # Health monitoring
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('MCP Health OK'); process.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+      
+    # Network isolation
+    networks:
+      - mcp_network
+      
+    # Resource limits for TEE environment
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+networks:
+  mcp_network:
+    driver: bridge
+    
+volumes:
+  mcp_logs:
+    driver: local

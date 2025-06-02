@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "F:\\coding"
+      ]
+    },
+    "secret-network": {
+      "command": "F:\\coding\\secret-network-mcp\\start-with-logging.bat"
+    }
+  }
+}

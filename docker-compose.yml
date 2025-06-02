@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  secret-network-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: secret-network-mcp
+    restart: unless-stopped
+    
+    # Environment variables - these will be populated by the TEE VM's env system
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - NETWORK=${NETWORK:-testnet}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - SKIP_NETWORK_CHECK=${SKIP_NETWORK_CHECK:-false}
+      - ALLOW_OFFLINE_MODE=${ALLOW_OFFLINE_MODE:-false}
+      # Add any Secret Network specific env vars here
+      - SECRET_CHAIN_ID=${SECRET_CHAIN_ID:-}
+      - SECRET_CHAIN_URL=${SECRET_CHAIN_URL:-}
+      
+    # Mount volumes for persistent data
+    volumes:
+      - ./logs:/app/logs:rw
+      
+    # Network configuration
+    networks:
+      - mcp-network
+      
+    # Health check
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('MCP Server Health Check'); process.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+      
+    # Keep container running (MCP server runs in stdio mode)
+    stdin_open: true
+    tty: true
+
+networks:
+  mcp-network:
+    driver: bridge
+
+# Note: For TEE VM deployment, this docker-compose.yaml should be simplified
+# The TEE VM will handle environment variables through its secure env system

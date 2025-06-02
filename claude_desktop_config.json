@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "F:\\coding"
+      ]
+    },
+    "secret-network": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d F:\\coding\\secret-network-mcp && node dist\\server.js"
+      ],
+      "env": {
+        "NODE_ENV": "production",
+        "NETWORK": "mainnet",
+        "LOG_LEVEL": "info",
+        "MCP_MODE": "true",
+        "SKIP_NETWORK_CHECK": "false",
+        "ALLOW_OFFLINE_MODE": "false",
+        "SECRET_RPC_URL": "https://rpc.ankr.com/http/scrt_cosmos",
+        "SECRET_LCD_URL": "https://rpc.ankr.com/http/scrt_cosmos",
+        "SECRET_GRPC_URL": "https://rpc.ankr.com/http/scrt_cosmos"
+      }
+    }
+  }
+}

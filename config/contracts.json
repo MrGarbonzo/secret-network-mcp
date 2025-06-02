@@ -1,0 +1,34 @@
+{
+  "mainnet": {
+    "tokens": {
+      "SSCRT": {
+        "address": "secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek",
+        "name": "Secret SCRT",
+        "symbol": "SSCRT",
+        "decimals": 6
+      },
+      "SHD": {
+        "address": "secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+        "name": "Shade Token",
+        "symbol": "SHD",
+        "decimals": 8
+      }
+    },
+    "dex": {
+      "SecretSwap": {
+        "factory": "secret1ja0hcwvy76grqkpgwznxukgd7t8a8anmmx05pp",
+        "router": "secret1pjhdug87nxzv0esxasmeyfsucaj98pw4334wyc"
+      }
+    }
+  },
+  "testnet": {
+    "tokens": {
+      "SSCRT": {
+        "address": "secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek",
+        "name": "Secret SCRT",
+        "symbol": "SSCRT",
+        "decimals": 6
+      }
+    }
+  }
+}

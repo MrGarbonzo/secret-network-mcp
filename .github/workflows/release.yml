@@ -1,0 +1,132 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    needs: []  # This will run independently, but you can add dependencies if needed
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: secret-network-mcp-${{ github.ref_name }}
+        path: ./artifacts
+        
+    - name: Extract version info
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "version_number=${VERSION#v}" >> $GITHUB_OUTPUT
+        
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        cat > release_notes.md << EOF
+        # Secret Network MCP Server ${{ steps.version.outputs.version }}
+        
+        ## 🚀 Docker Image
+        
+        **Registry:** \`ghcr.io/${{ github.repository }}\`  
+        **Tag:** \`${{ steps.version.outputs.version }}\`
+        
+        ## 📋 Quick Deploy
+        
+        ### For TEE VM Deployment
+        1. Download the \`docker-compose.yml\` from the release assets
+        2. Upload to your TEE VM
+        3. Set environment variables through TEE VM's secure env system
+        4. Deploy with \`docker-compose up -d\`
+        
+        ### For Local Testing
+        \`\`\`bash
+        docker run --rm -it \\
+          -e SKIP_NETWORK_CHECK=true \\
+          -e ALLOW_OFFLINE_MODE=true \\
+          ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+        \`\`\`
+        
+        ## 🔐 Security
+        
+        This image is built with:
+        - Multi-stage Docker build for minimal attack surface
+        - Non-root user execution
+        - SHA256 digest verification available
+        - Built from tagged source code
+        
+        ## 📁 Release Assets
+        
+        - \`docker-compose.yml\` - Production deployment configuration with exact SHA256
+        - \`build-info.json\` - Build metadata and verification info
+        
+        ## 🔗 Claude Desktop Connection
+        
+        To connect Claude Desktop to this MCP server:
+        
+        ### Local Docker
+        \`\`\`json
+        {
+          "mcpServers": {
+            "secret-network": {
+              "command": "docker",
+              "args": ["exec", "-i", "secret-network-mcp", "node", "dist/server.js"],
+              "env": {}
+            }
+          }
+        }
+        \`\`\`
+        
+        ### Remote TEE VM
+        \`\`\`json
+        {
+          "mcpServers": {
+            "secret-network": {
+              "command": "docker",
+              "args": ["exec", "-i", "secret-network-mcp", "node", "dist/server.js"],
+              "env": {
+                "DOCKER_HOST": "tcp://your-tee-vm-ip:2376"
+              }
+            }
+          }
+        }
+        \`\`\`
+        
+        ## 📊 What's Included
+        
+        ### Tools Available
+        - **Network Tools**: Chain status, block info, transaction queries
+        - **Token Tools**: Balance queries, SNIP-20 token interactions
+        - **Contract Tools**: Smart contract queries and interactions
+        
+        ### Supported Networks
+        - Secret Network Mainnet (\`secret-4\`)
+        - Secret Network Testnet (\`pulsar-3\`)
+        
+        ---
+        
+        **Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ steps.version.outputs.previous_version }}...${{ steps.version.outputs.version }}
+        EOF
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: "Secret Network MCP ${{ steps.version.outputs.version }}"
+        body_path: release_notes.md
+        files: |
+          artifacts/docker-compose.yml
+          artifacts/build-info.json
+        draft: false
+        prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+        generate_release_notes: true

@@ -325,10 +325,6 @@ The server includes comprehensive health checks:
 - Ensure Docker compatibility
 - Test in both development and production modes
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🆘 Support & Documentation
 
 - **Issues**: Create GitHub issues for bugs or feature requests

@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "test-server": {
-      "command": "node",
-      "args": ["F:\\coding\\secret-network-mcp\\test-minimal-server.js"]
-    }
-  }
-}

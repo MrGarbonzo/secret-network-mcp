@@ -1,6 +1,6 @@
 # Secret Network MCP Server
 
-A production-ready Model Context Protocol (MCP) server providing secure access to Secret Network blockchain functionality. Designed for deployment in TEE (Trusted Execution Environment) VMs with comprehensive blockchain querying capabilities.
+A Model Context Protocol (MCP) server providing secure access to Secret Network blockchain functionality. Designed for deployment in TEE (Trusted Execution Environment) VMs with comprehensive blockchain querying capabilities.
 
 ## 🌟 Features
 

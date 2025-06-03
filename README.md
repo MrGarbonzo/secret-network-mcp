@@ -1,6 +1,15 @@
 # Secret Network MCP Server
 
-A Model Context Protocol (MCP) server that provides secure, extensible access to Secret Network blockchain functionality. Designed for deployment in TEE-based environments with future multi-chain and wallet integration capabilities.
+A production-ready Model Context Protocol (MCP) server providing secure access to Secret Network blockchain functionality. Designed for deployment in TEE (Trusted Execution Environment) VMs with comprehensive blockchain querying capabilities.
+
+## 🌟 Features
+
+- **Complete Secret Network Integration** - Real-time blockchain data access
+- **MCP Protocol Compliant** - Works seamlessly with Claude Desktop and other MCP clients  
+- **TEE VM Optimized** - Production deployment in confidential computing environments
+- **Docker Ready** - Containerized deployment with health monitoring
+- **Multiple Transport Modes** - STDIO for local use, SSE for remote access
+- **Comprehensive API** - Network status, transactions, tokens, and smart contracts
 
 ## 🚀 Quick Start
 
@@ -9,70 +18,68 @@ A Model Context Protocol (MCP) server that provides secure, extensible access to
 - Docker (for containerized deployment)
 - Git
 
-### Installation
+### Local Development
 
 ```bash
-# Clone the repository
-git clone <repository-url>
+# Clone and setup
+git clone <your-repository-url>
 cd secret-network-mcp
-
-# Install dependencies
 npm install
 
-# Copy environment configuration
+# Configure environment
 cp .env.example .env
+# Edit .env with your preferred settings
 
-# Build the project
+# Build and run
 npm run build
-
-# Start the server
 npm start
 ```
 
 ### Docker Deployment (Recommended)
 
 ```bash
-# Build and run with Docker Compose
+# Development with hot reload
 docker-compose up -d
 
-# Or build and run manually
-docker build -t secret-network-mcp .
-docker run -p 3000:3000 secret-network-mcp
+# Production deployment (TEE VM ready)
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ## 🛠️ Available Tools
 
 ### Network Information
-- `get_network_status` - Get current network status including latest block height, validator count, and bonded tokens
-- `get_block_info` - Get detailed information about a specific block by height
-- `get_transaction_info` - Get detailed information about a transaction by hash
-- `get_latest_blocks` - Get information about the latest N blocks
+- **`get_network_status`** - Current network status, block height, validator count, bonded tokens
+- **`get_block_info`** - Detailed block information by height
+- **`get_transaction_info`** - Transaction details by hash
+- **`get_latest_blocks`** - Recent block information (up to 20 blocks)
 
-### Token Operations
-- `get_token_balance` - Get token balance for an address (SCRT or specific denom)
-- `get_snip20_token_info` - Get SNIP-20 token information (name, symbol, decimals, total supply)
-- `get_snip20_balance` - Get SNIP-20 token balance for an address with viewing key
-- `list_known_tokens` - List known tokens and their contract addresses
+### Token Operations  
+- **`get_token_balance`** - SCRT or custom token balances for any address
+- **`get_snip20_token_info`** - SNIP-20 token metadata (name, symbol, decimals, supply)
+- **`get_snip20_balance`** - Private token balance with viewing key
+- **`list_known_tokens`** - Directory of known tokens and contracts
 
 ### Smart Contract Queries
-- `query_contract` - Execute a query on a smart contract
-- `get_contract_info` - Get information about a smart contract
-- `list_known_contracts` - List known smart contracts for the current network
+- **`query_contract`** - Execute queries on any smart contract
+- **`get_contract_info`** - Contract metadata (code ID, creator, admin)
+- **`list_known_contracts`** - Directory of known contracts by category
+- **`get_contract_code_info`** - Contract code information by code ID
 
 ## 📖 Usage Examples
 
-### Basic Network Query
+### Network Status
 ```json
 {
   "tool": "get_network_status",
   "arguments": {}
 }
 ```
+Returns current block height (~19M+), validator count (~60+), and bonded tokens.
 
-### Get Token Balance
+### Check Token Balance
 ```json
 {
-  "tool": "get_token_balance",
+  "tool": "get_token_balance", 
   "arguments": {
     "address": "secret1abc123...",
     "denom": "uscrt"
@@ -85,7 +92,7 @@ docker run -p 3000:3000 secret-network-mcp
 {
   "tool": "query_contract",
   "arguments": {
-    "contractAddress": "secret1contract...",
+    "contractAddress": "secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek",
     "query": {
       "token_info": {}
     }
@@ -93,76 +100,46 @@ docker run -p 3000:3000 secret-network-mcp
 }
 ```
 
+### Private Token Balance
+```json
+{
+  "tool": "get_snip20_balance",
+  "arguments": {
+    "contractAddress": "secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek", 
+    "address": "secret1abc123...",
+    "viewingKey": "your-viewing-key"
+  }
+}
+```
+
 ## ⚙️ Configuration
 
 ### Environment Variables
-- `NODE_ENV` - Application environment (development/production)
-- `NETWORK` - Secret Network to connect to (mainnet/testnet)
-- `PORT` - Server port (default: 3000)
-- `LOG_LEVEL` - Logging level (error/warn/info/debug)
-- `CACHE_TTL` - Cache time-to-live in seconds
-- `RATE_LIMIT_REQUESTS` - Maximum requests per window
-- `RATE_LIMIT_WINDOW` - Rate limiting window in milliseconds
 
-### Network Configuration
-Edit `config/networks.json` to modify network endpoints:
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | `development` | Application environment |
+| `NETWORK` | `mainnet` | Secret Network (mainnet/testnet) |
+| `PORT` | `3000` | Server port |
+| `LOG_LEVEL` | `info` | Logging level (error/warn/info/debug) |
+| `MCP_TRANSPORT` | `stdio` | Transport mode (stdio/sse) |
+| `CACHE_TTL` | `300` | Cache duration in seconds |
+| `RATE_LIMIT_REQUESTS` | `100` | Max requests per window |
+| `RATE_LIMIT_WINDOW` | `60000` | Rate limit window (ms) |
 
-```json
-{
-  "testnet": {
-    "chainId": "pulsar-3",
-    "name": "Secret Network Testnet",
-    "rpcUrl": "https://api.pulsar3.scrttestnet.com",
-    "grpcUrl": "https://grpc.pulsar3.scrttestnet.com:443"
-  }
-}
-```
-
-### Known Contracts
-Edit `config/contracts.json` to add known contract addresses:
-
-```json
-{
-  "testnet": {
-    "tokens": {
-      "SSCRT": {
-        "address": "secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek",
-        "name": "Secret SCRT",
-        "symbol": "SSCRT",
-        "decimals": 6
-      }
-    }
-  }
-}
-```
-
-## 🧪 Development
-
-### Development Mode
+### Secret Network Configuration
 ```bash
-# Run with hot reload
-npm run dev
-
-# Run with Docker Compose (development profile)
-docker-compose --profile dev up
+# Optional: Override default RPC endpoints
+SECRET_CHAIN_ID=secret-4
+SECRET_CHAIN_URL=https://lcd.secret.express
+SECRET_RPC_URL=https://secretnetwork-rpc.lavenderfive.com:443
+SECRET_GRPC_URL=https://secretnetwork-grpc.lavenderfive.com:443
 ```
 
-### Testing
+### TEE VM Security Variables (Auto-injected)
 ```bash
-# Run tests
-npm test
-
-# Run tests with watch mode
-npm run test:watch
-```
-
-### Linting
-```bash
-# Check code style
-npm run lint
-
-# Fix code style issues
-npm run lint:fix
+SECRET_API_KEY=${SECRET_API_KEY:-}
+ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
 ```
 
 ## 🏗️ Architecture
@@ -170,113 +147,201 @@ npm run lint:fix
 ```
 secret-network-mcp/
 ├── src/
-│   ├── server.ts           # Main MCP server
-│   ├── tools/              # MCP tool implementations
-│   ├── services/           # Business logic
-│   ├── types/              # TypeScript definitions
-│   └── utils/              # Utility functions
-├── config/                 # Configuration files
-├── tests/                  # Test files
-└── docs/                   # Documentation
+│   ├── server.ts              # Main MCP server (stdio)
+│   ├── server-http.ts         # HTTP/SSE server
+│   ├── server-tcp.ts          # TCP server variant
+│   ├── tools/                 # MCP tool implementations
+│   │   ├── network.ts         # Network & block tools
+│   │   ├── tokens.ts          # Token & SNIP-20 tools
+│   │   └── contracts.ts       # Smart contract tools
+│   ├── services/              # Core business logic
+│   │   ├── secretNetwork.ts   # Secret.js integration
+│   │   └── chainAbstraction.ts # Multi-chain framework
+│   ├── types/                 # TypeScript definitions
+│   └── utils/                 # Utility functions
+├── config/                    # Network configurations
+├── deployment/                # Deployment configs
+├── docs/                      # Documentation
+└── tests/                     # Test suites
 ```
 
-### Key Components
-- **MCP Protocol Layer** - Handles MCP communication
-- **Secret Network Integration** - Blockchain interaction via Secret.js
-- **Chain Abstraction** - Multi-chain support framework
-- **Security Layer** - TEE-aware security practices
+## 🐳 Docker Deployment
 
-## 🔒 Security
+### Development Mode
+Uses `docker-compose.yml`:
+- Local build from source
+- Hot reload enabled
+- Testnet by default
+- Debug logging
+- Local volume mounts
+
+### Production Mode (TEE VM)
+Uses `docker-compose.prod.yml`:
+- Pre-built image from GitHub Container Registry
+- Mainnet configuration
+- Resource limits (512MB RAM, 0.5 CPU)
+- Named volumes for persistence
+- Health monitoring
+- Security optimizations
+
+### Transport Modes
+
+**STDIO (Default)** - For Claude Desktop integration:
+```bash
+docker run -it secret-network-mcp node dist/server.js
+```
+
+**SSE (Remote Access)** - For web/remote clients:
+```bash
+docker run -p 3000:3000 -e MCP_TRANSPORT=sse secret-network-mcp
+```
+
+## 🔒 Security Features
 
 ### Privacy Preservation
-- No sensitive data logging
-- Secure viewing key handling for private queries
-- Encrypted communication channels
+- No sensitive data logging in production
+- Secure viewing key handling for private queries  
+- Encrypted communication channels in TEE environment
+- Minimal attack surface in Docker containers
 
 ### Access Control
-- Rate limiting per client
+- Rate limiting per client connection
 - Input validation and sanitization
-- Minimal attack surface in Docker container
+- Resource limits to prevent abuse
+- Health checks for monitoring
 
-## 🚀 Deployment
+## 🧪 Development
 
-### TEE Environment
-This server is designed for deployment in Trusted Execution Environment (TEE) based VMs that only allow a single Dockerfile upload.
+### Available Scripts
 
-### Production Deployment
 ```bash
-# Build production image
-docker build -t secret-network-mcp:prod .
+# Development
+npm run dev              # Hot reload development server
+npm run build           # TypeScript compilation
+npm run test            # Run test suite
+npm run test:watch      # Tests with hot reload
 
-# Run in production mode
-docker run -d \
-  --name secret-network-mcp \
-  -e NODE_ENV=production \
-  -e NETWORK=mainnet \
-  -p 3000:3000 \
-  secret-network-mcp:prod
+# Docker
+npm run docker:build:prod     # Build production image
+npm run docker:compose:up     # Start development stack
+npm run docker:compose:prod   # Start production stack
+
+# Validation
+npm run lint            # Code style checking
+npm run lint:fix        # Auto-fix style issues
+npm run deploy:check    # Pre-deployment validation
 ```
 
-### Health Checks
-The server includes built-in health checks:
-- HTTP endpoint for container orchestration
-- Blockchain connectivity verification
+### Testing
+```bash
+# Run all tests
+npm test
+
+# Quick functionality test
+npm run test:simple
+
+# Real network connection test
+npm run test:connection
+
+# Framework validation
+npm run test:framework
+```
+
+## 🚀 Production Deployment
+
+### TEE VM Deployment
+
+1. **Upload Configuration**: Use `docker-compose.prod.yml`
+2. **Environment Setup**: TEE VM auto-injects security variables
+3. **Start Services**: `docker-compose -f docker-compose.prod.yml up -d`
+4. **Health Check**: Automatic container health monitoring
+
+### Claude Desktop Integration
+
+**For TEE VM deployment (SSE mode)**:
+```json
+{
+  "mcpServers": {
+    "secret-network": {
+      "command": "node",
+      "args": ["-e", "/* SSE client code */"],
+      "env": {
+        "MCP_SERVER_URL": "https://your-tee-vm-domain:3000"
+      }
+    }
+  }
+}
+```
+
+**For local development (stdio mode)**:
+```json
+{
+  "mcpServers": {
+    "secret-network": {
+      "command": "node",
+      "args": ["F:\\coding\\secret-network-mcp\\dist\\server.js"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  }
+}
+```
+
+### Health Monitoring
+
+The server includes comprehensive health checks:
+- Container health endpoint
+- Secret Network connectivity verification  
 - Service dependency validation
+- Resource usage monitoring
 
-## 🗺️ Roadmap
+## 📊 Performance
 
-### Phase 1: Foundation (Current)
-- ✅ Basic MCP server implementation
-- ✅ Secret Network integration
-- ✅ Core query tools
-- ✅ Docker deployment
+### Optimizations
+- Response caching with configurable TTL
+- Connection pooling for blockchain queries
+- Rate limiting to prevent abuse
+- Resource limits for stable performance
 
-### Phase 2: Enhanced Features
-- [ ] Advanced query capabilities
-- [ ] Performance optimizations
-- [ ] Caching layer
-- [ ] Enhanced error handling
-
-### Phase 3: Transaction Support
-- [ ] Transaction simulation
-- [ ] Transaction broadcasting
-- [ ] Wallet integration preparation
-
-### Phase 4: Multi-Chain Support
-- [ ] Chain abstraction framework
-- [ ] Additional Cosmos chains
-- [ ] Cross-chain queries
+### Resource Usage (Production)
+- **Memory**: 256MB reserved, 512MB max
+- **CPU**: 0.25 cores reserved, 0.5 cores max
+- **Storage**: Persistent logs volume
+- **Network**: Minimal bandwidth usage
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Make changes and add tests
+4. Ensure all tests pass: `npm test`
+5. Submit pull request
 
 ### Development Guidelines
 - Follow TypeScript best practices
-- Add tests for new features
+- Add tests for new functionality
 - Update documentation as needed
 - Ensure Docker compatibility
+- Test in both development and production modes
 
-## 📄 License
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## 🆘 Support & Documentation
 
-- Create an issue for bug reports or feature requests
-- Check the [documentation](docs/) for detailed guides
-- Review the [project plan](docs/PROJECT_PLAN.md) for development roadmap
+- **Issues**: Create GitHub issues for bugs or feature requests
+- **Documentation**: Check the [docs/](docs/) directory for detailed guides
+- **Deployment**: See [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) for deployment specifics
 
 ## 🙏 Acknowledgments
 
-- [Secret Network](https://scrt.network/) for the privacy-preserving blockchain
-- [Anthropic](https://www.anthropic.com/) for the Model Context Protocol
-- The Secret Network developer community
+- [Secret Network](https://scrt.network/) - Privacy-preserving blockchain platform
+- [Anthropic](https://www.anthropic.com/) - Model Context Protocol specification
+- [Secret.js](https://github.com/scrtlabs/secret.js) - Secret Network JavaScript SDK
+- Secret Network developer community
 
 ---
 
-**Note**: This is a foundational implementation. Please review the [project plan](docs/PROJECT_PLAN.md) for planned features and development phases.
+**Status**: ✅ Production Ready - Successfully deployed on TEE VM with real mainnet connectivity

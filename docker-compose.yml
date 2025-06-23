@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   secret-network-mcp:
+    Image: ghcr.io/mrgarbonzo/secret-network-mcp:main
     build:
       context: .
       dockerfile: Dockerfile

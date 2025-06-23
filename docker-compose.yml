@@ -12,13 +12,20 @@ services:
     # Environment variables - these will be populated by the TEE VM's env system
     environment:
       - NODE_ENV=${NODE_ENV:-production}
-      - NETWORK=${NETWORK:-testnet}
+      - NETWORK=${NETWORK:-mainnet}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - SKIP_NETWORK_CHECK=${SKIP_NETWORK_CHECK:-false}
       - ALLOW_OFFLINE_MODE=${ALLOW_OFFLINE_MODE:-false}
+      # Enable HTTP mode for MCP
+      - MCP_HTTP_MODE=${MCP_HTTP_MODE:-true}
+      - PORT=${PORT:-3000}
       # Add any Secret Network specific env vars here
       - SECRET_CHAIN_ID=${SECRET_CHAIN_ID:-}
       - SECRET_CHAIN_URL=${SECRET_CHAIN_URL:-}
+      
+    # Expose port for HTTP access
+    ports:
+      - "3000:3000"
       
     # Mount volumes for persistent data
     volumes:
@@ -28,17 +35,17 @@ services:
     networks:
       - mcp-network
       
-    # Health check
+    # Health check for HTTP mode
     healthcheck:
-      test: ["CMD", "node", "-e", "console.log('MCP Server Health Check'); process.exit(0)"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
       
-    # Keep container running (MCP server runs in stdio mode)
-    stdin_open: true
-    tty: true
+    # No longer need stdin_open/tty for HTTP mode
+    # stdin_open: true
+    # tty: true
 
 networks:
   mcp-network:

@@ -8,6 +8,7 @@
     "build": "tsc",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
+    "start:http": "MCP_HTTP_MODE=true node dist/server-http.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:basic": "node basic-test.js",

@@ -9,7 +9,7 @@
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "start:http": "MCP_HTTP_MODE=true node dist/server-http.js",
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:watch": "jest --watch",
     "test:basic": "node basic-test.js",
     "test:simple": "node test-simple.js",

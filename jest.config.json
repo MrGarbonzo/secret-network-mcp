@@ -1,16 +1,28 @@
 {
-  "preset": "ts-jest",
+  "preset": "ts-jest/presets/default-esm",
   "testEnvironment": "node",
-  "transform": {
-    "^.+\\.ts$": ["ts-jest", {
+  "extensionsToTreatAsEsm": [".ts"],
+  "globals": {
+    "ts-jest": {
+      "useESM": true,
       "tsconfig": {
-        "module": "commonjs",
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
+        "module": "ESNext",
+        "target": "ESNext",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
       }
-    }]
+    }
   },
-  "moduleFileExtensions": ["ts", "js"],
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  },
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!((@modelcontextprotocol|secretjs)/.*\\.js$))"
+  ],
   "testMatch": [
     "**/tests/**/*.test.ts"
   ],

@@ -1,18 +1,16 @@
 {
-  "preset": "ts-jest/presets/default-esm",
+  "preset": "ts-jest",
   "testEnvironment": "node",
-  "extensionsToTreatAsEsm": [".ts"],
   "transform": {
     "^.+\\.ts$": ["ts-jest", {
-      "useESM": true
+      "tsconfig": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+      }
     }]
   },
-  "moduleNameMapper": {
-    "^(\\.{1,2}/.*)\\.js$": "$1"
-  },
-  "transformIgnorePatterns": [
-    "node_modules/(?!((@modelcontextprotocol|secretjs)/.*\\.js$))"
-  ],
+  "moduleFileExtensions": ["ts", "js"],
   "testMatch": [
     "**/tests/**/*.test.ts"
   ],
@@ -26,5 +24,6 @@
     "lcov",
     "html"
   ],
-  "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"]
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"],
+  "testTimeout": 10000
 }

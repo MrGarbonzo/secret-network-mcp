@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   secret-network-mcp:
-    image: ghcr.io/mrgarbonzo/secret-network-mcp:main
+    image: ghcr.io/mrgarbonzo/secret-network-mcp:latest
     container_name: secret-network-mcp
     restart: unless-stopped
     
